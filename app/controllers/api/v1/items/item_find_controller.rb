@@ -1,7 +1,7 @@
 module Api
   module V1
     module Items
-      class ItemFindController < ApplicationController
+      class ItemFindsController < ApplicationController
         def find
           item = Item.find_by_input(type, params[:search])
           render json: ItemSerializer.new(item)
