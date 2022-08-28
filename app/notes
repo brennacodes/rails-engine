@@ -1,0 +1,6 @@
+merchant name:varchar
+customer first_name:varchar last_name:varchar
+item name:varchar description:varchar unit_price:double precision merchant:references
+invoice customer:references merchant:references status:varchar
+invoice_items item:references invoice:references quantity:integer unit_price:double precision
+transaction invoice:references credit_card_number:varchar credit_card_expiration_date:varchar result:varchar
