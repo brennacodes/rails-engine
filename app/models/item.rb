@@ -23,7 +23,7 @@ class Item < ApplicationRecord
     return find(input) if type == "id"
     return where(merchant_id: input).order(merchant_id: :asc) if type == "merchant_id"
     return where("name ILIKE ?", "%#{input}%").order(name: :asc) if type == "name"
-    return where("description ILIKE ?", "%#{input}%").order(description: :asc) if type = "description"
+    return where("description ILIKE ?", "%#{input}%").order(description: :asc) if type == "description"
     return where("unit_price < ?", input).order(unit_price: :asc) if type == "unit_price_max"
     return where("unit_price > ?", input).order(unit_price: :asc) if type == "unit_price_min"
   end

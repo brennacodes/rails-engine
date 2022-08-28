@@ -7,7 +7,7 @@ RSpec.describe 'find all items' do
   let!(:item3) { Item.create!(name: "Bundle of hay", description: "Yowzas!", unit_price: 29.50, merchant_id: merchant1.id) }
 
   it 'returns all items that match a search param' do
-    GET api_v1_items_find_all_path, params: { name: 'bu' }
+    get api_v1_items_find_all_path, params: { name: 'bu' }
 
     expect(response).to be_successful
 
@@ -17,7 +17,7 @@ RSpec.describe 'find all items' do
   end
 
   it 'has a sad path' do
-    GET api_v1_items_find_all_path, params: { name: '' }
+    get api_v1_items_find_all_path, params: { name: '' }
 
     expect(response.status).to eq(204)
   end
