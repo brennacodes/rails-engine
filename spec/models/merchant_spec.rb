@@ -19,7 +19,6 @@ RSpec.describe Merchant, type: :model do
 
   describe 'class methods' do
     it 'can find a merchant by user input' do
-      # require 'pry'; binding.pry 
       expect(Merchant.find_by_input(merchant1.id)).to eq(merchant1)
       expect(Merchant.find_by_input("name", "Billy Bob's Burgers")).to eq(merchant1)
       expect(Merchant.find_by_input("name", "Bob")).to eq(merchant1)

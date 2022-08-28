@@ -8,7 +8,6 @@ class Merchant < ApplicationRecord
   validates_presence_of :name
 
   def self.find_by_input(type = "id", input)
-    # require 'pry'; binding.pry 
     return find(input) if type == "id"
     return where("name ILIKE ?", "%#{input}%").order(name: :asc).first if type == "name"
   end

@@ -1,16 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe 'find all items' do
-  let!(:merchant) { create(:merchant) }
-  let!(:item1) { create(:item, merchant: merchant) }
-  it 'returns all items that match a search param' do
-    merchant = Merchant.create!(name: 'Bobby Brown')
-    item1 = create(:item, merchant_id: merchant.id, name: 'log')
-    item2 = create(:item, merchant_id: merchant.id, name: 'stick')
-    item3 = create(:item, merchant_id: merchant.id, name: 'tree')
-    item4 = create(:item, merchant_id: merchant.id, name: 'sloth')
+  let!(:merchant1) { Merchant.create!(name: "Billy Bob's Burgers") }
+  let!(:item1) { Item.create!(name: "Dip", description: "Hot", unit_price: 3.99, merchant_id: merchant1.id) }
+  let!(:item2) { Item.create!(name: "Burger", description: "Yummy", unit_price: 10.99, merchant_id: merchant1.id) }
+  let!(:item3) { Item.create!(name: "Bundle of hay", description: "Yowzas!", unit_price: 29.50, merchant_id: merchant1.id) }
 
-    get api_v1_items_find_all_path, params: { name: 'lo' }
+  it 'returns all items that match a search param' do
+    get api_v1_items_find_all_path, params: { name: 'bu' }
 
     expect(response).to be_successful
 
@@ -20,12 +17,6 @@ RSpec.describe 'find all items' do
   end
 
   it 'has a sad path' do
-    merchant = Merchant.create!(name: 'Bobby Brown')
-    item1 = create(:item, merchant_id: merchant.id, name: 'log')
-    item2 = create(:item, merchant_id: merchant.id, name: 'stick')
-    item3 = create(:item, merchant_id: merchant.id, name: 'tree')
-    item4 = create(:item, merchant_id: merchant.id, name: 'sloth')
-
     get api_v1_items_find_all_path, params: { name: '' }
 
     expect(response.status).to eq(204)
