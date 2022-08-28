@@ -1,13 +1,13 @@
 class ApplicationController < ActionController::API
-  rescue_from User::NotAuthorized, with: :deny_access
-  rescue_from ActiveRecord::RecordInvalid, with: :show_record_errors
+  include Response
+  include ExceptionHandler
+  before_action :find_type, only: [:find, :find_all]
 
   private
-    def deny_access
-      head :forbidden
-    end
-
-    def show_record_errors(exception)
-      redirect_back_or_to root_url, alert: exception.record.errors.full_messages.to_sentence
+    def find_type
+      type = "name" if params[:name]
+      type = "description" if params[:description]
+      type = "unit_price" if params[:unit_price]
+      type = "merchant_id" if params[:merchant_id]
     end
 end

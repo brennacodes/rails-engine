@@ -9,15 +9,14 @@ module Api
       end
 
       def show
-        item = Item.find(params[:id])
-        render json: ItemSerializer.new(item)
+        render json: ItemSerializer.new(@item)
       end
 
       def create
         @item = Item.new(item_params)
 
         if @item.save
-          render :show, status: :created, location: @item
+          render json: @item, status: :created, location: @item
         else
           render json: @item.errors, status: :unprocessable_entity
         end
@@ -25,7 +24,7 @@ module Api
 
       def update
         if @item.update(item_params)
-          render :show, status: :ok, location: @item
+          render json: @item, status: :ok, location: @item
         else
           render json: @item.errors, status: :unprocessable_entity
         end
