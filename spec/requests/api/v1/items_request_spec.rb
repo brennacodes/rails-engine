@@ -1,157 +1,120 @@
 require 'rails_helper'
 
-RSpec.describe 'Items API' do
-  describe 'get all items' do
-    it 'sends a list of all items' do
-      create_list(:merchant, 3)
+RSpec.describe 'items requests' do
+  let!(:merchant1) { Merchant.create!(name: "Billy Bob's Burgers") }
+  let!(:item1) { Item.create!(name: "Dip", description: "Hot", unit_price: 3.99, merchant_id: merchant1.id) }
+  let!(:item2) { Item.create!(name: "Burger", description: "Yummy", unit_price: 10.99, merchant_id: merchant1.id) }
+  let!(:item3) { Item.create!(name: "Bundle of hay", description: "Yowzas!", unit_price: 29.50, merchant_id: merchant1.id) }
 
-      get '/api/v1/items'
+  it 'can return all items' do
+    get api_v1_items_path
+
+    expect(response).to be_successful
+
+    items = JSON.parse(response.body, symbolize_names: true)
+    item = items[0][:data]
+
+    expect(item).to have_key(:id)
+    expect(item[:id]).to be_a(String)
+
+    expect(item[:attributes]).to have_key(:name)
+    expect(item[:attributes][:name]).to be_a(String)
+    expect(item[:attributes][:name]).to eq(item1.name)
+
+    expect(item[:attributes]).to have_key(:description)
+    expect(item[:attributes][:description]).to be_a(String)
+    expect(item[:attributes][:description]).to eq(item1.description)
+
+    expect(item[:attributes]).to have_key(:unit_price)
+    expect(item[:attributes][:unit_price]).to be_a(Float)
+    expect(item[:attributes][:unit_price]).to eq(item1.unit_price)
+
+    expect(item[:attributes]).to have_key(:merchant_id)
+    expect(item[:attributes][:merchant_id]).to eq(item1.merchant_id)
+  end
+
+  describe 'item show' do
+    it 'can return the information for one item' do
+      get api_v1_item_path(item1.id)
 
       expect(response).to be_successful
 
-      items = JSON.parse(response.body, symbolize_names: true)
+      item = JSON.parse(response.body, symbolize_names: true)
 
-      items[:data].each do |item|
-        expect(item).to have_key(:id)
-        expect(item[:id]).to be_an(String)
+      expect(item[:data]).to have_key(:id)
+      expect(item[:data][:id]).to be_an(String)
 
-        expect(item[:attributes]).to have_key(:name)
-        expect(item[:attributes][:name]).to be_an(String)
+      expect(item[:data][:attributes]).to have_key(:name)
+      expect(item[:data][:attributes][:name]).to be_an(String)
+      expect(item[:data][:attributes][:name]).to eq('Dip')
 
-        expect(item[:attributes]).to have_key(:description)
-        expect(item[:attributes][:description]).to be_an(String)
+      expect(item[:data][:attributes]).to have_key(:description)
+      expect(item[:data][:attributes][:description]).to be_an(String)
+      expect(item[:data][:attributes][:description]).to eq('Hot')
 
-        expect(item[:attributes]).to have_key(:unit_price)
-        expect(item[:attributes][:unit_price]).to be_an(Float)
+      expect(item[:data][:attributes]).to have_key(:unit_price)
+      expect(item[:data][:attributes][:unit_price]).to be_a(Float)
+      expect(item[:data][:attributes][:unit_price]).to eq(3.99)
+    end
 
-        expect(item[:attributes]).to have_key(:merchant_id)
-        expect(item[:attributes][:merchant_id]).to be_an(Integer)
-      end
+    it 'returns the proper error when item does not exist' do
+      get api_v1_item_path(item3.id + 1)
+
+      expect(response.status).to eq(404)
     end
   end
 
-  describe 'get one item' do
-    describe 'happy path' do
-      it 'can get the information for 1 item' do
-        create_list(:merchant, 1)
-        test_item = create(:item, merchant_id: Merchant.last.id, name: 'cereal')
-
-        get api_v1_item_path(test_item.id)
-
-        expect(response).to be_successful
-
-        item = JSON.parse(response.body, symbolize_names: true)
-
-        expect(item[:data]).to have_key(:id)
-        expect(item[:data][:id]).to be_an(String)
-
-        expect(item[:data][:attributes]).to have_key(:name)
-        expect(item[:data][:attributes][:name]).to be_an(String)
-        expect(item[:data][:attributes][:name]).to eq('cereal')
-
-        expect(item[:data][:attributes]).to have_key(:description)
-        expect(item[:data][:attributes][:description]).to be_an(String)
-
-        expect(item[:data][:attributes]).to have_key(:unit_price)
-        expect(item[:data][:attributes][:unit_price]).to be_an(Float)
-      end
-    end
-
-    describe 'sad path' do
-      it 'returns the proper error when item does not exist' do
-        create_list(:merchant, 3)
-
-        get api_v1_item_path(5_000_000_000_000_000)
-
-        expect(response.status).to eq(404)
-      end
-    end
-  end
-
-  describe 'create/destroy' do
-    it 'can create a new item and destroy that item' do
-      test_merchant = create(:merchant)
+  describe 'item create' do
+    it 'can create a new item' do
       item_params = {
-        name: 'cereal',
-        description: 'a morning delight',
-        unit_price: 3.50,
-        merchant_id: test_merchant.id
+        name: 'columbian coffee',
+        description: 'dark roast, medium grind',
+        unit_price: 3.99,
+        merchant_id: merchant1.id
       }
       headers = { 'CONTENT_TYPE' => 'application/json' }
 
-      # We include this header to make sure that these params are passed as JSON rather than as plain text
       post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
-      created_item = Item.last
+
+      item4 = Item.last
 
       expect(response).to be_successful
-      expect(Item.all.count).to eq 6
-
-      expect(created_item.name).to eq(item_params[:name])
-      expect(created_item.description).to eq(item_params[:description])
-      expect(created_item.unit_price).to eq(item_params[:unit_price])
-      expect(created_item.merchant_id).to eq(item_params[:merchant_id])
-
-      delete "/api/v1/items/#{created_item.id}"
-
-      expect(response).to be_successful
-
-      expect(Item.all.count).to eq 5
-    end
-
-    it 'can delete empty invoices associated with deleted items' do
-      merchant = Merchant.create!(name: 'Bobby Brown')
-      item = create(:item, merchant_id: merchant.id)
-      customer = Customer.create!(first_name: 'Steve', last_name: 'Bengels')
-      invoice = Invoice.create!(customer_id: customer.id, merchant_id: merchant.id, status: 'pending')
-      inv_items = InvoiceItem.create!(item_id: item.id, invoice_id: invoice.id, quantity: 5, unit_price: 10.15)
-
-      expect(Item.count).to eq 1
-      expect(Invoice.count).to eq 1
-
-      delete "/api/v1/items/#{item.id}"
-
-      expect(response).to be_successful
-      expect(Item.count).to eq 0
-      expect(Invoice.count).to eq 0
+      expect(item4.name).to eq(item_params[:name])
+      expect(item4.description).to eq(item_params[:description])
+      expect(item4.unit_price).to eq(item_params[:unit_price])
+      expect(item4.merchant_id).to eq(item_params[:merchant_id])
     end
   end
 
-  describe 'update' do
-    describe 'happy path' do
-      it 'can update an existing item' do
-        test_merchant = create(:merchant)
-        test_item = create(:item,
-                           name: 'cereal',
-                           description: 'a morning delight',
-                           unit_price: 3.50,
-                           merchant_id: test_merchant.id)
+  describe 'item update' do
+    it 'can update an existing item' do
+      expect(item1.name).to eq('Dip')
 
-        previous_name = test_item.name
-        item_params = { name: 'cold oatmeal' }
-        headers = { 'CONTENT_TYPE' => 'application/json' }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      patch "/api/v1/items/#{item1.id}", headers: headers, params: JSON.generate({ item: { name: 'Sandwich' } })
 
-        # We include this header to make sure that these params are passed as JSON rather than as plain text
-        patch "/api/v1/items/#{test_item.id}", headers: headers, params: JSON.generate({ item: item_params })
-        new_item = Item.find_by(id: test_item.id)
-
-        new_name = 'cold oatmeal'
-
-        expect(response).to be_successful
-        expect(new_item.name).to_not eq(previous_name)
-        expect(new_item.name).to eq(new_name)
-      end
+      expect(response).to be_successful
+      expect(item1.reload.name).to eq('Sandwich')
     end
 
-    describe 'sad path' do
-      it 'returns the correct error' do
-        create_list(:merchant, 3)
+    it 'returns the proper error when item does not exist' do
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      patch "/api/v1/items/50000000000000000", headers: headers, params: JSON.generate({ item: { name: 'Sandwich' } })
 
-        item_params = { name: 'cold oatmeal' }
-        headers = { 'CONTENT_TYPE' => 'application/json' }
-        patch "/api/v1/items/50000000000000000", headers: headers, params: JSON.generate({ item: item_params })
+      expect(response.status).to eq(404)
+    end
+  end
 
-        expect(response.status).to eq(404)
-      end
+  describe 'item destroy' do
+    it 'can destroy an item' do
+      expect(Item.count).to eq(3)
+      expect(item1).to exist
+
+      delete "/api/v1/items/#{item1.id}"
+
+      expect(response).to be_successful
+      expect(Item.count).to eq(2)
+      expect(item1).to_not exist
     end
   end
 end

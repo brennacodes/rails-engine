@@ -13,18 +13,18 @@ module Api
       end
 
       def create
-        @item = Item.new(item_params)
+        item = Item.new(item_params)
 
-        if @item.save
-          render json: @item, status: :created, location: @item
+        if item.save
+          render json: item, status: :created
         else
-          render json: @item.errors, status: :unprocessable_entity
+          render json: item.errors, status: :unprocessable_entity
         end
       end
 
       def update
         if @item.update(item_params)
-          render json: @item, status: :ok, location: @item
+          render json: @item, status: :ok
         else
           render json: @item.errors, status: :unprocessable_entity
         end
