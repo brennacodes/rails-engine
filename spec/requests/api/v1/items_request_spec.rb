@@ -12,7 +12,7 @@ RSpec.describe 'items requests' do
     expect(response).to be_successful
 
     items = JSON.parse(response.body, symbolize_names: true)
-    item = items[0][:data]
+    item = items[:data][0]
 
     expect(item).to have_key(:id)
     expect(item[:id]).to be_a(String)
