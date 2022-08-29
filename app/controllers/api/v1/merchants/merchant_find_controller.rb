@@ -8,12 +8,12 @@ module Api
           elsif params[:name]
             merchant = Merchant.find_by_input(params[:name])
           end
-          render json: MerchantSerializer.new(merchant)
+          json_response(MerchantSerializer.new(merchant))
         end
 
         def find_all
           merchants = Merchant.find_all_by_input(params[:name])
-          render json: MerchantSerializer.new(merchants)
+          json_response(MerchantSerializer.new(merchants))
         end
       end
     end

@@ -6,15 +6,19 @@ module Api
 
         def find
           item = Item.find_by_input(check_input[0], check_input[1])
-          render json: ItemSerializer.new(item)
+          serialize_response(item)
         end
 
         def find_all
           items = Item.find_all_by_input(check_input[0], check_input[1])
-          render json: ItemSerializer.new(items)
+          serialize_response(items)
         end
 
         private
+          def serialize_response(object)
+            json_response(ItemSerializer.new(object))
+          end
+
           def check_input
             type = find_type
             input = params[type.to_sym]

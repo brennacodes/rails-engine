@@ -5,7 +5,7 @@ module Api
         def show
           item = Item.find(params[:item_id])
           merchant = item.merchant
-          render json: MerchantSerializer.new(merchant)
+          json_response(MerchantSerializer.new(merchant))
         end
       end
     end
