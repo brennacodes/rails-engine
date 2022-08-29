@@ -13,26 +13,26 @@ RSpec.describe 'merchants controller' do
     merchants = JSON.parse(response.body, symbolize_names: true)
     merchants = merchants[:data]
 
-    expect(merchant).to have_key(:id)
-    expect(merchant[:id]).to be_an(String)
+    expect(merchants.count).to eq(3)
+    expect(merchants).to have_key(:id)
+    expect(merchants[:id]).to be_an(String)
 
-    expect(merchant[:attributes]).to have_key(:name)
-    expect(merchant[:attributes][:name]).to be_an(String) 
+    expect(merchants[:attributes]).to have_key(:name)
+    expect(merchants[:attributes][:name]).to be_an(String) 
   end
 
-    describe 'show' do
-      it 'returns a single merchant' do
-        get api_v1_merchant_path(merchant1.id)
+  describe 'show' do
+    it 'returns a single merchant' do
+      get api_v1_merchant_path(merchant1.id)
 
-        expect(response).to be_successful
+      expect(response).to be_successful
 
-        merchant = JSON.parse(response.body, symbolize_names: true)
+      merchant = JSON.parse(response.body, symbolize_names: true)
 
-        expect(merchant[:data]).to have_key(:id)
-        expect(merchant[:data][:id]).to be_an(String)
-        expect(merchant[:data][:attributes]).to have_key(:name)
-        expect(merchant[:data][:attributes][:name]).to be_an(String)
-      end
+      expect(merchant[:data]).to have_key(:id)
+      expect(merchant[:data][:id]).to be_an(String)
+      expect(merchant[:data][:attributes]).to have_key(:name)
+      expect(merchant[:data][:attributes][:name]).to be_an(String)
     end
 
     it 'gives a 404 error when id is invalid' do
