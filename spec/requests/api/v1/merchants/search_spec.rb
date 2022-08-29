@@ -31,13 +31,13 @@ RSpec.describe 'merchant find controller', type: :request do
 
   describe 'sad path' do
     it 'raises error when there is no match' do
-      get api_v1_merchants_find_path, params: { name: 'X' }
+      get api_v1_merchants_find_path, params: { name: '99' }
 
       expect(response).to be_successful
 
       merchant = JSON.parse(response.body, symbolize_names: true)
 
-      expect(merchant[:errors]).to eq("Could not find merchant that matched with X")
+      expect(merchant[:errors]).to eq("Could not find merchant with a name matching 99.")
     end
   end
 end

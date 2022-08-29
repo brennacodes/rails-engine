@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "merchant items", type: :request do
+RSpec.describe "merchants items", type: :request do
   let!(:merchant1) { Merchant.create!(name: "Billy Bob's Burgers") }
   let!(:item1) { Item.create!(name: "Dip", description: "Hot", unit_price: 3.99, merchant_id: merchant1.id) }
   let!(:item2) { Item.create!(name: "Burger", description: "Yummy", unit_price: 10.99, merchant_id: merchant1.id) }
@@ -8,7 +8,7 @@ RSpec.describe "merchant items", type: :request do
 
   describe 'index' do
     it 'returns all of a merchants items' do
-      get api_v1_merchants_items_path(Merchant.last.id)
+      get api_v1_merchants_items_path(merchant1.id)
 
       expect(response).to be_successful
 
@@ -35,7 +35,7 @@ RSpec.describe "merchant items", type: :request do
     end
 
     it 'gives a 404 error when id is invalid' do
-      get api_v1_merchants_items_path(merchant1.id + 1)
+      get api_v1_merchants_items_path("#{merchant1.id + 1}")
 
       expect(response.status).to eq(404)
     end
