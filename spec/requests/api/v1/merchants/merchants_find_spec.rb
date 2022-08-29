@@ -1,13 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe 'find for merchant endpoint' do
-  describe 'happy path' do
-    it 'returns one merchant based on search params' do
-      merchant1 = create(:merchant, name: 'Pilson & Sons')
-      merchant2 = create(:merchant, name: 'Joe Schlick HVAC')
-      merchant3 = create(:merchant, name: 'Willies Big Rigs')
-      merchant4 = create(:merchant, name: 'Porky Bob')
-
+RSpec.describe 'merchant find' do
+  describe 'find merchants' do
+    it 'can return one merchant based on search input' do
       get api_v1_merchants_find_path, params: { name: 'P' }
 
       expect(response).to be_successful
