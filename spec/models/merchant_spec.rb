@@ -21,11 +21,11 @@ RSpec.describe Merchant, type: :model do
     it 'can find a merchant by user input' do
       expect(Merchant.find_by_input("Billy Bob's Burgers")).to eq(merchant1)
       expect(Merchant.find_by_input("bill")).to eq(merchant1)
-      expect(Merchant.find_by_input("Bob")).to eq([merchant1, merchant3])
+      expect(Merchant.find_by_input("Bob")).to eq(merchant1)
     end
 
     it 'can find all matching merchants by user input' do
-      expect(Merchant.find_all_by_input("name", "Bob")).to eq([merchant1, merchant3])
+      expect(Merchant.find_all_by_input("Bob")).to eq([merchant1, merchant3])
     end
   end
 end
