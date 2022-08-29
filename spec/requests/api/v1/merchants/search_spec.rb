@@ -22,7 +22,7 @@ RSpec.describe 'merchant find controller', type: :request do
       expect(merchant[:attributes][:name]).to eq("Billy Bob's Burgers")
     end
 
-    it 'raises a 400 error if there are no params' do
+    it 'returns a 400 error if an empty string is input' do
       get api_v1_merchants_find_path, params: { name: ''}
 
       expect(response.status).to eq(400)

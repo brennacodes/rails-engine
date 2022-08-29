@@ -10,18 +10,26 @@ module Api
 
         # If the params hash has an id key, find the merchant by id, otherwise find the merchant by name
         def show
-          type = find_type
-          if params[:id] || params[:name] == ""
+          check = check_input
+          if check == nil
             return json_missing_input
           elsif params[:id]
             merchant = Merchant.find(params[:id])
+            serialize_merchant(merchant)
           elsif params[:name]
             merchant = Merchant.find_by_input(params[:name])
+            serialize_merchant(merchant)
           else
-            return json_not_found(params[:name]||params[:id])
+            return json_not_found(check[0] || check[1])
           end
-          serialize_merchant(merchant)
         end
+
+        private
+          def check_input
+            type = find_type
+            input = params[type.to_sym]
+            type.empty? || input.empty? ? nil : [type, input]
+          end
       end
     end
   end

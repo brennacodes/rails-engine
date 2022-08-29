@@ -13,14 +13,15 @@ RSpec.describe 'item find controller', type: :request do
       expect(response).to be_successful
 
       items = JSON.parse(response.body, symbolize_names: true)
+      # require 'pry'; binding.pry 
 
       expect(items[:data].count).to eq 2
     end
 
-    it 'returns an error if an empty string is input' do
+    it 'returns a 400 error if an empty string is input' do
       get api_v1_items_find_all_path, params: { name: '' }
 
-      expect(response.status).to eq(204)
+      expect(response.status).to eq(400)
     end
   end
 

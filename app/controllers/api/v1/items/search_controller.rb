@@ -5,13 +5,23 @@ module Api
         before_action :check_input, only: [:find, :find_all]
 
         def index
-          items = Item.find_all_by_input(check_input[0], check_input[1])
-          serialize_item(items)
+          check = check_input
+          if check == nil 
+            return json_missing_input 
+          else
+            item = Item.find_all_by_input(check[0], check[1])
+            serialize_item(item)
+          end
         end
 
         def show
-          item = Item.find_by_input(check_input[0], check_input[1])
-          serialize_item(item)
+          check = check_input
+          if check == nil 
+            return json_missing_input
+          else
+            item = Item.find_by_input(check[0], check[1])
+            serialize_item(item)
+          end
         end
 
         private
@@ -20,11 +30,7 @@ module Api
           def check_input
             type = find_type
             input = params[type.to_sym]
-            if input.empty?
-              render json: { data: {}, error: 'Missing search parameters. Please try again' }, status: 204 
-            else
-              return type, input
-            end
+            type.empty? || input.empty? ? nil : [type, input]
           end
 
           # # Returns:
