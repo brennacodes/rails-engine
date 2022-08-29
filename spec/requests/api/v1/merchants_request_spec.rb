@@ -11,14 +11,15 @@ RSpec.describe 'merchants controller' do
     expect(response).to be_successful
 
     merchants = JSON.parse(response.body, symbolize_names: true)
-    merchants = merchants[:data]
+    expect(merchants[:data].count).to eq(3)
 
-    expect(merchants.count).to eq(3)
-    expect(merchants).to have_key(:id)
-    expect(merchants[:id]).to be_an(String)
+    merchant = merchants[:data].first
 
-    expect(merchants[:attributes]).to have_key(:name)
-    expect(merchants[:attributes][:name]).to be_an(String) 
+    expect(merchant).to have_key(:id)
+    expect(merchant[:id]).to be_an(String)
+
+    expect(merchant[:attributes]).to have_key(:name)
+    expect(merchant[:attributes][:name]).to be_an(String) 
   end
 
   describe 'show' do

@@ -1,12 +1,8 @@
 class ApplicationController < ActionController::API
-  include Responsable
-  include Exceptionable
-
-  def serialize_item(object, status = :ok)
-    json_response(ItemSerializer.new(object), status)
-  end
-
-  def serialize_merchant(object, status = :ok)
-    json_response(MerchantSerializer.new(object), status)
+  include Serializable
+  include Jsonable
+  
+  rescue_from ActiveRecord::RecordNotFound do |e|
+    json_response({ message: e.message }, :not_found)
   end
 end
