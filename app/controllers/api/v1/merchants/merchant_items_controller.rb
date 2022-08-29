@@ -5,7 +5,7 @@ module Api
         def index
           merchant = Merchant.find(params[:merchant_id])
           items = merchant.items
-          json_response(ItemSerializer.new(items))
+          serialize_item(items)
         end
       end
     end

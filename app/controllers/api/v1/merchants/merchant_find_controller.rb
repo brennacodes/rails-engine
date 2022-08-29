@@ -7,13 +7,15 @@ module Api
             merchant = Merchant.find(params[:id])
           elsif params[:name]
             merchant = Merchant.find_by_input(params[:name])
+          else
+            json_response({ errors: "Could not find merchant that matched with #{params[:name]}" }, :not_found)
           end
-          json_response(MerchantSerializer.new(merchant))
+          serialize_merchant(merchant)
         end
 
         def find_all
           merchants = Merchant.find_all_by_input(params[:name])
-          json_response(MerchantSerializer.new(merchants))
+          serialize_merchant(merchants)
         end
       end
     end

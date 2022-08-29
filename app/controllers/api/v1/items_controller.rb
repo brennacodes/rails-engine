@@ -5,28 +5,28 @@ module Api
 
       def index
         items = Item.all
-        serialize_response(items)
+        serialize_item(items)
       end
 
       def show
-        serialize_response(@item)
+        serialize_item(@item)
       end
 
       def create
         item = Item.new(item_params)
 
         if item.save
-          serialize_response(item, :created)
+          serialize_item(item, :created)
         else
-          serialize_response(item.errors, :unprocessable_entity)
+          serialize_item(item.errors, :unprocessable_entity)
         end
       end
 
       def update
         if @item.update(item_params)
-          serialize_response(@item, :ok)
+          serialize_item(@item, :ok)
         else
-          serialize_response(@item.errors, :unprocessable_entity)
+          serialize_item(@item.errors, :unprocessable_entity)
         end
       end
 
@@ -35,10 +35,6 @@ module Api
       end
 
       private
-        def serialize_response(object)
-          json_response(ItemSerializer.new(object))
-        end
-
         def set_item
           @item = Item.find(params[:id])
         end
