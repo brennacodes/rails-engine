@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
-  include Response
-  include ExceptionHandler
+  include Responsable
+  include Exceptionable
 
   def serialize_item(object, status = :ok)
     json_response(ItemSerializer.new(object), status)
