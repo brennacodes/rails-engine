@@ -108,13 +108,15 @@ RSpec.describe 'items requests' do
   describe 'item destroy' do
     it 'can destroy an item' do
       expect(Item.count).to eq(3)
-      expect(item1).to exist
+      expect(item1).to be_a(Item)
 
       delete "/api/v1/items/#{item1.id}"
 
       expect(response).to be_successful
       expect(Item.count).to eq(2)
-      expect(item1).to_not exist
+      
+      get "/api/v1/items/#{item1.id}"
+      expect(response.status).to eq(404)
     end
   end
 end
