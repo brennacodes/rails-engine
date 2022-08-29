@@ -1,30 +1,28 @@
 require 'rails_helper'
 
-RSpec.describe 'Merchants API' do
-  it 'sends a list of merchants' do
-    create_list(:merchant, 3)
+RSpec.describe 'merchants controller' do
+  let!(:merchant1) { Merchant.create!(name: "Billy Bob's Burgers") }
+  let!(:merchant2) { Merchant.create!(name: "Jumpin' Jack's Jams") }
+  let!(:merchant3) { Merchant.create!(name: "Bobby's BBQ") }
 
-    get '/api/v1/merchants'
+  it 'sends a list of merchants' do
+    get api_v1_merchants_path
 
     expect(response).to be_successful
 
     merchants = JSON.parse(response.body, symbolize_names: true)
+    merchants = merchants[:data]
 
-    merchants[:data].each do |merchant|
-      expect(merchant).to have_key(:id)
-      expect(merchant[:id]).to be_an(String)
+    expect(merchant).to have_key(:id)
+    expect(merchant[:id]).to be_an(String)
 
-      expect(merchant[:attributes]).to have_key(:name)
-      expect(merchant[:attributes][:name]).to be_an(String)
-    end
+    expect(merchant[:attributes]).to have_key(:name)
+    expect(merchant[:attributes][:name]).to be_an(String) 
   end
 
-  describe 'merchats#show' do
-    describe 'happy path' do
-      it 'gets the merchant' do
-        create_list(:merchant, 3)
-
-        get api_v1_merchant_path(Merchant.last.id)
+    describe 'show' do
+      it 'returns a single merchant' do
+        get api_v1_merchant_path(merchant1.id)
 
         expect(response).to be_successful
 
@@ -37,14 +35,10 @@ RSpec.describe 'Merchants API' do
       end
     end
 
-    describe 'sad path' do
-      it 'gives a 404 error when id is invalid' do
-        create_list(:merchant, 3)
+    it 'gives a 404 error when id is invalid' do
+      get api_v1_merchant_path(1)
 
-        get api_v1_merchant_path(1)
-
-        expect(response.status).to eq(404)
-      end
+      expect(response.status).to eq(404)
     end
   end
 end
