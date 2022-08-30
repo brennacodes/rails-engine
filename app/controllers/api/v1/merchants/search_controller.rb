@@ -25,6 +25,8 @@ module Api
         end
 
         private
+          # It returns an array of the type of input and the input itself, 
+          # or nil if either is empty
           def check_input
             type = find_type
             input = params[type.to_sym]
