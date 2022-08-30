@@ -8,7 +8,8 @@ module Api
           serialize_merchant(merchants)
         end
 
-        # If the params hash has an id key, find the merchant by id, otherwise find the merchant by name
+        # If the params hash has an id key, find the merchant by id, 
+        # otherwise find the merchant by name
         def show
           check = check_input
           if check == nil

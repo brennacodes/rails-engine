@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'merchant search controller', type: :request do
+RSpec.describe 'merchant search controller' do
   let!(:merchant1) { Merchant.create!(name: "Billy Bob's Burgers") }
   let!(:merchant2) { Merchant.create!(name: "Jumpin' Jack's Jams") }
   let!(:merchant3) { Merchant.create!(name: "Bobby's BBQ") }
@@ -12,7 +12,6 @@ RSpec.describe 'merchant search controller', type: :request do
       expect(response).to be_successful
 
       response = JSON.parse(response.body, symbolize_names: true)
-
       expect(response[:data].count).to eq(1)
 
       merchant = response[:data].first
