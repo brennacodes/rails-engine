@@ -20,6 +20,7 @@ module Api
             merchant = Merchant.find_by_input(params[:name])
             serialize_merchant(merchant)
           else
+            require 'pry'; binding.pry 
             return json_not_found(check[0] || check[1])
           end
         end
