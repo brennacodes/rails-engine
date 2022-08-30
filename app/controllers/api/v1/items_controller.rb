@@ -18,7 +18,7 @@ module Api
         if item.save
           serialize_item(item, :created)
         else
-          serialize_item(item.errors, :unprocessable_entity)
+          json_response(item.errors, :unprocessable_entity)
         end
       end
 
@@ -26,7 +26,7 @@ module Api
         if @item.update(item_params)
           serialize_item(@item, :ok)
         else
-          serialize_item(@item.errors, :unprocessable_entity)
+          json_response(@item.errors, :unprocessable_entity)
         end
       end
 

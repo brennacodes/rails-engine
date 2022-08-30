@@ -84,6 +84,21 @@ RSpec.describe 'items requests' do
       expect(item4.unit_price).to eq(item_params[:unit_price])
       expect(item4.merchant_id).to eq(item_params[:merchant_id])
     end
+
+    it 'returns an error if an item cannot be created' do
+      item_params = {
+        name: '',
+        description: '',
+        unit_price: '',
+        merchant_id: merchant1.id
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(422)
+    end
   end
 
   describe 'item update' do
@@ -102,6 +117,14 @@ RSpec.describe 'items requests' do
       patch "/api/v1/items/50000000000000000", headers: headers, params: JSON.generate({ item: { name: 'Sandwich' } })
 
       expect(response.status).to eq(404)
+    end
+
+    it 'returns the proper error when an item cannot be created' do
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      patch "/api/v1/items/#{item1.id}", headers: headers, params: JSON.generate({ item: { name: '' } })
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(422)
     end
   end
 
