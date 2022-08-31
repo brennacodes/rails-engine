@@ -32,15 +32,6 @@ module Api
             input = params[type.to_sym]
             type.empty? || input.empty? ? nil : [type, input]
           end
-
-          # # Returns:
-          # #   The type of attribute that is being searched for.
-          # def find_type
-          #   return type = "name" if params[:name]
-          #   return type = "description" if params[:description]
-          #   return type = "unit_price" if params[:unit_price]
-          #   return type = "merchant_id" if params[:merchant_id]
-          # end
       end
     end
   end

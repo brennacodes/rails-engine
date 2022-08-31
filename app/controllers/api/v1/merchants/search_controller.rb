@@ -18,10 +18,10 @@ module Api
             merchant = Merchant.find(params[:id])
             serialize_merchant(merchant)
           elsif params[:name]
+            require 'pry'; binding.pry 
             merchant = Merchant.find_by_input(params[:name])
             serialize_merchant(merchant)
           else
-            require 'pry'; binding.pry 
             return json_not_found(check[0] || check[1])
           end
         end
@@ -33,6 +33,10 @@ module Api
             type = find_type
             input = params[type.to_sym]
             type.empty? || input.empty? ? nil : [type, input]
+          end
+
+          def merchant_params
+            params.require(:merchant).permit(:name)
           end
       end
     end

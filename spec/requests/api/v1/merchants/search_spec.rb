@@ -21,7 +21,7 @@ RSpec.describe 'merchant search controller' do
       expect(merchant[:id]).to eq(merchant1.id)
 
       expect(merchant[:attributes]).to have_key(:name)
-      epxect(merchant[:attributes][:name]).to be_a(String)
+      expect(merchant[:attributes][:name]).to be_a(String)
       expect(merchant[:attributes][:name]).to eq("Billy Bob's Burgers")
     end
 

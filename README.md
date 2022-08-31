@@ -1,24 +1,25 @@
-# README
+# Rails Engine
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This is a Rails Engine that provides a RESTful API for the following resources:
+- Items
+  - return all items
+  - return a single item
+  - return the merchant for a specific item
 
-Things you may want to cover:
+- Merchants
+  - return all merchants
+  - return a single merchant
+  - return all items for a specific merchant
 
-* Ruby version
+## To use:
 
-* System dependencies
+- Clone this repo
 
-* Configuration
+**From the command line:**
+- Run `bundle install`
+- Run `rake db:{create,migrate,seed}`
+- Run `rails s`
 
-* Database creation
+___
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+### [Click Here for Endpoints & Data Output](./public/api_endpoints.md)
