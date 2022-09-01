@@ -1,4 +1,5 @@
 class Item < ApplicationRecord
+  before_destroy :delete_empty_invoices
   belongs_to :merchant
 
   has_many :invoice_items
@@ -10,6 +11,10 @@ class Item < ApplicationRecord
                         :description,
                         :unit_price,
                         :merchant_id
+
+  def delete_empty_invoices
+    invoices.each { |inv| inv.items.distinct.count == 1 ? inv.destroy : nil }
+  end
 
   def self.find_by_input(type = "id", input)
     return find(input) if type == "id"
