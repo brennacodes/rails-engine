@@ -23,7 +23,6 @@ module Api
       end
 
       def update
-        # require 'pry'; binding.pry 
         check = check_input
         if check.values.any? == false
           json_response(@item.errors, :unprocessable_entity)
