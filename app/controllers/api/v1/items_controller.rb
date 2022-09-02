@@ -23,11 +23,13 @@ module Api
       end
 
       def update
-        if @item.update(item_params)
-          serialize_item(@item, :ok)
-        elsif find_type == nil
+        # require 'pry'; binding.pry 
+        check = check_input
+        if check.values.any? == false
           json_response(@item.errors, :unprocessable_entity)
-        else
+        elsif @item.update(item_params)
+          serialize_item(@item, :ok)
+        else 
           json_not_found(find_type, params[find_type.to_sym])
         end
       end

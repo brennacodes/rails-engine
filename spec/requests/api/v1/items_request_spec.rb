@@ -74,9 +74,8 @@ RSpec.describe 'items requests' do
         unit_price: 3.99,
         merchant_id: merchant1.id
       }
-      headers = { 'CONTENT_TYPE' => 'application/json' }
 
-      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+      post '/api/v1/items', params: { item: item_params }
 
       expect(response).to be_successful
       expect(response.status).to eq(201)
@@ -96,9 +95,8 @@ RSpec.describe 'items requests' do
         unit_price: '',
         merchant_id: merchant1.id
       }
-      headers = { 'CONTENT_TYPE' => 'application/json' }
 
-      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+      post api_v1_items_path, params: { item: item_params }
 
       expect(response).to_not be_successful
       expect(response.status).to eq(422)
@@ -109,23 +107,20 @@ RSpec.describe 'items requests' do
     it 'can update an existing item' do
       expect(item1.name).to eq('Dip')
 
-      headers = { 'CONTENT_TYPE' => 'application/json' }
-      patch "/api/v1/items/#{item1.id}", headers: headers, params: JSON.generate({ item: { name: 'Sandwich' } })
+      patch "/api/v1/items/#{item1.id}", params: { item: { name: 'Sandwich' }}
 
       expect(response).to be_successful
       expect(item1.reload.name).to eq('Sandwich')
     end
 
     it 'returns the proper error when item does not exist' do
-      headers = { 'CONTENT_TYPE' => 'application/json' }
-      patch "/api/v1/items/50000000000000000", headers: headers, params: JSON.generate({ item: { name: 'Sandwich' } })
+      patch "/api/v1/items/50000000000000000", params:  { item: { name: 'Sandwich' }}
 
       expect(response.status).to eq(404)
     end
 
     it 'returns the proper error when invalid data is given' do
-      headers = { 'CONTENT_TYPE' => 'application/json' }
-      patch "/api/v1/items/#{item1.id}", headers: headers, params: JSON.generate({ item: { name: '' } })
+      patch "/api/v1/items/#{item1.id}", params: { item: { name: '' }}
 
       expect(response).to_not be_successful
       expect(response.status).to eq(422)
