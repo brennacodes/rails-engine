@@ -8,10 +8,12 @@ class Item < ApplicationRecord
 
   after_destroy :delete_empty_invoices
 
-  validates_presence_of :name,
-                        :description,
-                        :unit_price,
-                        :merchant_id
+  validates_presence_of :description
+
+  validates :unit_price, numericality: { greater_than: 0 }
+  validates_numericality_of :merchant_id, only_integer: true
+  validates :name, presence: true, format: { with: /\D/, 
+                                  message: "must contain at least one letter" } 
 
   def delete_empty_invoices
     invoices.each { |inv| inv.items.distinct.count == 1 ? inv.destroy : nil }

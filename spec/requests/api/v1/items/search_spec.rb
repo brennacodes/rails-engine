@@ -9,65 +9,111 @@ RSpec.describe 'item find controller', type: :request do
   let!(:item4) { Item.create!(name: "X", description: "X!", unit_price: 3.99, merchant_id: merchant2.id) }
 
   describe 'item search' do
-    it 'can return all matches for a name search' do
-      get api_v1_items_find_all_path, params: { name: 'bu' }
+    describe 'happy path' do
+      it 'can return all matches for a name search' do
+        get api_v1_items_find_all_path, params: { name: 'bu' }
+        # require 'pry'; binding.pry 
+        expect(response).to be_successful
+        
+        items = JSON.parse(response.body, symbolize_names: true)
 
-      expect(response).to be_successful
-      
-      items = JSON.parse(response.body, symbolize_names: true)
+        expect(items[:data]).to be_an(Array)
+        expect(items[:data].count).to eq 2
+      end
 
-      expect(items[:data]).to be_an(Array)
-      expect(items[:data].count).to eq 2
+      it 'can return all matches for a description search' do
+        get api_v1_items_find_all_path, params: { description: 'Y' }
+
+        expect(response).to be_successful
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(items[:data]).to be_an(Array)
+        expect(items[:data].count).to eq 2
+      end
+
+      it 'can return all matches for a max_unit_price search' do
+        get api_v1_items_find_all_path, params: { unit_price_max: '15.00' }
+
+        expect(response).to be_successful
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(items[:data]).to be_an(Array)
+        expect(items[:data].count).to eq 3
+      end
+
+      it 'can return all matches for a min_unit_price search' do
+        get api_v1_items_find_all_path, params: { unit_price_min: '15.00' }
+
+        expect(response).to be_successful
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(items[:data]).to be_an(Array)
+        expect(items[:data].count).to eq 1
+      end
+
+      it 'can return all matches for a merchant_id search' do
+        get api_v1_items_find_all_path, params: { merchant_id: merchant1.id }
+
+        expect(response).to be_successful
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(items[:data]).to be_an(Array)
+        expect(items[:data].count).to eq 3
+      end
     end
 
-    it 'can return all matches for a description search' do
-      get api_v1_items_find_all_path, params: { description: 'Y' }
+    describe 'sad path' do
+      it 'returns an error when incorrect params are sent' do
+        get api_v1_items_find_all_path, params: { name: '800' }
 
-      expect(response).to be_successful
+        expect(response.status).to eq(400)
+      end
 
-      items = JSON.parse(response.body, symbolize_names: true)
+      it 'returns a 400 error if an empty string is input' do
+        get api_v1_items_find_all_path, params: { name: '' }
 
-      expect(items[:data]).to be_an(Array)
-      expect(items[:data].count).to eq 2
-    end
+        expect(response.status).to eq(400)
+      end
 
-    it 'can return all matches for a max_unit_price search' do
-      get api_v1_items_find_all_path, params: { unit_price_max: '15.00' }
+      it 'returns a 400 error if no search params are input' do
+        get api_v1_items_find_all_path, params: { }
 
-      expect(response).to be_successful
+        expect(response.status).to eq(400)
+      end
 
-      items = JSON.parse(response.body, symbolize_names: true)
+      it 'returns an error if a non-integer is input' do
+        get api_v1_items_find_all_path, params: { unit_price_max: 'abc' }
+        
+        expect(response.status).to eq(404)
+      end
 
-      expect(items[:data]).to be_an(Array)
-      expect(items[:data].count).to eq 3
-    end
+      it 'returns an error if no matches are found' do
+        get api_v1_items_find_all_path, params: { unit_price_min: '1000000.00' }
+        
+        expect(response.status).to eq(404)
 
-    it 'can return all matches for a min_unit_price search' do
-      get api_v1_items_find_all_path, params: { unit_price_min: '15.00' }
+        get api_v1_items_find_all_path, params: { unit_price_max: '0.00' }
 
-      expect(response).to be_successful
+        expect(response.status).to eq(404)
 
-      items = JSON.parse(response.body, symbolize_names: true)
+        get api_v1_items_find_all_path, params: { unit_price_max: '-1'}
 
-      expect(items[:data]).to be_an(Array)
-      expect(items[:data].count).to eq 1
-    end
+        expect(response.status).to eq(404)
+      end
 
-    it 'can return all matches for a merchant_id search' do
-      get api_v1_items_find_all_path, params: { merchant_id: merchant1.id }
+      it 'returns an error when more than one param is input' do
+        get api_v1_items_find_all_path, params: { name: 'bu', unit_price_max: '100.00' }
 
-      expect(response).to be_successful
+        expect(response.status).to eq(400)
 
-      items = JSON.parse(response.body, symbolize_names: true)
+        get api_v1_items_find_all_path, params: { name: 'bu', unit_price_min: '100.00' }
 
-      expect(items[:data]).to be_an(Array)
-      expect(items[:data].count).to eq 3
-    end
-
-    it 'returns a 400 error if an empty string is input' do
-      get api_v1_items_find_all_path, params: { name: '' }
-
-      expect(response.status).to eq(400)
+        expect(response.status).to eq(400)
+      end
     end
   end
 
