@@ -10,8 +10,8 @@ class Item < ApplicationRecord
 
   validates_presence_of :description
 
-  validates :unit_price, numericality: { greater_than: 0 }
-  validates_numericality_of :merchant_id, only_integer: true
+  validates_presence_of :unit_price, numericality: { greater_than: 0 }
+  validates_presence_of :merchant_id, only_integer: true
   validates :name, presence: true, format: { with: /\D/, 
                                   message: "must contain at least one letter" } 
 
