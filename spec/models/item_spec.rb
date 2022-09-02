@@ -2,13 +2,15 @@ require 'rails_helper'
 
 RSpec.describe Item, type: :model do
   let!(:merchant1) { Merchant.create!(name: "Billy Bob's Burgers") }
-  let!(:item1) { Item.create!(name: "Dip", description: "Hot", unit_price: 3.99, merchant_id: merchant1.id) }
-  let!(:item2) { Item.create!(name: "Burger", description: "Yummy", unit_price: 10.99, merchant_id: merchant1.id) }
-  let!(:item3) { Item.create!(name: "Bundle of hay", description: "Yowzas!", unit_price: 29.50, merchant_id: merchant1.id) }
+  let!(:item1) { Item.create!(name: "Dip", description: "Hot", unit_price: 399, merchant_id: merchant1.id) }
+  let!(:item2) { Item.create!(name: "Burger", description: "Yummy", unit_price: 1099, merchant_id: merchant1.id) }
+  let!(:item3) { Item.create!(name: "Bundle of hay", description: "Yowzas!", unit_price: 2950, merchant_id: merchant1.id) }
   let!(:customer1) { Customer.create!(first_name: "Bob", last_name: "Bobberson") }
   let!(:invoice1) { Invoice.create!(status: 0, merchant_id: merchant1.id, customer_id: customer1.id) }
   let!(:invoice2) { Invoice.create!(status: 0, merchant_id: merchant1.id, customer_id: customer1.id) }
-  let!(:invoice_item1) { InvoiceItem.create!(item_id: item1.id, invoice_id: invoice1.id, quantity: 1, unit_price: 10.00) }
+  let!(:invoice_item1) { InvoiceItem.create!(item_id: item1.id, invoice_id: invoice1.id, quantity: 1, unit_price: 1000) }
+  let!(:invoice_item2) { InvoiceItem.create!(item_id: item1.id, invoice_id: invoice2.id, quantity: 1, unit_price: 500) }
+  let!(:invoice_item3) { InvoiceItem.create!(item_id: item2.id, invoice_id: invoice2.id, quantity: 1, unit_price: 1000) }
   
   describe 'relationships' do
     it { should belong_to(:merchant) }
@@ -40,8 +42,23 @@ RSpec.describe Item, type: :model do
       expect(Item.find_all_by_input("name", "Bu")).to eq([item3, item2])
       expect(Item.find_all_by_input("description", "Yum")).to eq([item2])
       expect(Item.find_all_by_input("description", "Y")).to eq([item3, item2])
-      expect(Item.find_all_by_input("unit_price_max", 15.00)).to eq([item1, item2])
-      expect(Item.find_all_by_input("unit_price_min", 15.00)).to eq([item3])
+      expect(Item.find_all_by_input("unit_price_max", 1500)).to eq([item1, item2])
+      expect(Item.find_all_by_input("unit_price_min", 1500)).to eq([item3])
+    end
+  end
+
+  describe 'instance methods' do
+    it 'can delete associated invoices where the item is the only item on the invoice' do
+      expect(item1.invoices.count).to eq(2)
+      expect(item2.invoices.count).to eq(1)
+      expect(Invoice.where(id: invoice1.id).exists?).to be true
+      expect(Invoice.where(id: invoice2.id).exists?).to be true
+
+      item1.destroy!
+      
+      expect(Item.where(id: item1.id).exists?).to be false
+      expect(invoice2.items.count).to eq(1)
+      expect(Invoice.where(id: invoice2.id).exists?).to be true
     end
   end
 end
