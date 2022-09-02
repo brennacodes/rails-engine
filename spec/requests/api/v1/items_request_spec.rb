@@ -6,6 +6,7 @@ RSpec.describe 'items requests' do
   let!(:item2) { Item.create!(name: "Burger", description: "Yummy", unit_price: 10.99, merchant_id: merchant1.id) }
   let!(:item3) { Item.create!(name: "Bundle of hay", description: "Yowzas!", unit_price: 29.50, merchant_id: merchant1.id) }
 
+
   it 'can return all items' do
     get api_v1_items_path
 
@@ -30,6 +31,7 @@ RSpec.describe 'items requests' do
     expect(item[:attributes][:unit_price]).to eq(item1.unit_price)
 
     expect(item[:attributes]).to have_key(:merchant_id)
+    expect(item[:attributes][:merchant_id]).to be_a(Integer)
     expect(item[:attributes][:merchant_id]).to eq(item1.merchant_id)
   end
 
@@ -76,9 +78,11 @@ RSpec.describe 'items requests' do
 
       post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
 
+      expect(response).to be_successful
+      expect(response.status).to eq(201)
+      
       item4 = Item.last
 
-      expect(response).to be_successful
       expect(item4.name).to eq(item_params[:name])
       expect(item4.description).to eq(item_params[:description])
       expect(item4.unit_price).to eq(item_params[:unit_price])
@@ -119,7 +123,7 @@ RSpec.describe 'items requests' do
       expect(response.status).to eq(404)
     end
 
-    it 'returns the proper error when an item cannot be created' do
+    it 'returns the proper error when invalid data is given' do
       headers = { 'CONTENT_TYPE' => 'application/json' }
       patch "/api/v1/items/#{item1.id}", headers: headers, params: JSON.generate({ item: { name: '' } })
 
@@ -139,6 +143,14 @@ RSpec.describe 'items requests' do
       expect(Item.count).to eq(2)
       
       get "/api/v1/items/#{item1.id}"
+      expect(response.status).to eq(404)
+    end
+  end
+
+  describe 'sad path' do
+    it 'returns an error if a string is used as an item id' do
+      get "/api/v1/items/abc"
+
       expect(response.status).to eq(404)
     end
   end
