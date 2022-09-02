@@ -12,7 +12,7 @@ RSpec.describe 'item find controller', type: :request do
     describe 'happy path' do
       it 'can return all matches for a name search' do
         get api_v1_items_find_all_path, params: { name: 'bu' }
-        # require 'pry'; binding.pry 
+        
         expect(response).to be_successful
         
         items = JSON.parse(response.body, symbolize_names: true)

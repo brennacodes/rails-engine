@@ -7,10 +7,13 @@ module Api
         # return the serialized item
         def index
           check = check_input
+          # require 'pry'; binding.pry 
           return json_check_input if too_many_params || check.values.any? == false
             if check.keys[0].include?("price")
               items = Item.find_all_by_input(check.keys[0], params[check.keys[0].to_sym].to_f)
-            else
+            elsif check.keys[0] == "merchant_id"
+              items = Item.find_all_by_input(check.keys[0], params[check.keys[0].to_sym].to_i)
+            else 
               items = Item.find_all_by_input(check.keys[0], params[check.keys[0].to_sym])
             end
           return json_not_found(check.keys[0], params[check.keys[0].to_sym]) if items == []
@@ -22,7 +25,9 @@ module Api
           return json_check_input if too_many_params || check.values.any? == false
             if check.keys[0].include?("price")
               item = Item.find_by_input(check.keys[0], params[check.keys[0].to_sym].to_f)
-            else
+            elsif check.keys[0] == "merchant_id"
+              item = Item.find_by_input(check.keys[0], params[check.keys[0].to_sym].to_i)
+            else 
               item = Item.find_by_input(check.keys[0], params[check.keys[0].to_sym])
             end
           return json_not_found(check.keys[0], params[check.keys[0].to_sym]) if item == []

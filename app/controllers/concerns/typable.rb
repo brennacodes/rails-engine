@@ -25,7 +25,7 @@ module Typable
 
   def merchant_conds
     value = params[:merchant_id]
-    { "merchant_id" => (not_nil(value) && value.is_a?(Integer)) }
+    { "merchant_id" => (not_nil(value) && value.to_i.is_a?(Integer)) }
   end
 
   def price_conds(type)
