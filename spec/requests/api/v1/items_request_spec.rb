@@ -13,6 +13,9 @@ RSpec.describe 'items requests' do
     expect(response).to be_successful
 
     items = JSON.parse(response.body, symbolize_names: true)
+
+    expect(items[:data].count).to eq(3)
+
     item = items[:data][0]
 
     expect(item).to have_key(:id)
@@ -57,6 +60,10 @@ RSpec.describe 'items requests' do
       expect(item[:data][:attributes]).to have_key(:unit_price)
       expect(item[:data][:attributes][:unit_price]).to be_a(Float)
       expect(item[:data][:attributes][:unit_price]).to eq(3.99)
+
+      expect(item[:data][:attributes]).to have_key(:merchant_id)
+      expect(item[:data][:attributes][:merchant_id]).to be_a(Integer)
+      expect(item[:data][:attributes][:merchant_id]).to eq(item1.merchant_id)
     end
 
     it 'returns the proper error when item does not exist' do
